@@ -29,7 +29,7 @@ MPFR_BLD	= $(BUILD_DIR)/mpfr-2.3.1
 GCC_BOOTSTRAP_SRC	= $(ARCHIVE_DIR)/gcc-4.3.0
 GCC_BOOTSTRAP_BLD	= $(BUILD_DIR)/gcc-4.3.0-bootstrap
 
-MAKE		= make #-j4
+MAKE		= make -j4
 
 GCC_BOOTSTRAP_CONFIGURE_OPTS	= --with-gmp=$(HOME)/local --with-mpfr=$(HOME)/local \
 			--with-sysroot=$(INSTALL_DIR) --with-gnu-ld --with-gnu-as
