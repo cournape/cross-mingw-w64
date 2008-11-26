@@ -130,7 +130,7 @@ $(W64API_BLD)/configure.done:
 	mkdir -p $(W64API_BLD)
 	(cd $(W64API_BLD) && $(W64API_SRC)/configure \
 	--prefix=$(INSTALL_DIR) \
-	--host=$(TARGET))
+	--host=$(HOST) --target=$(TARGET))
 	touch $@
 
 gcc_bootstrap_install: gcc_bootstrap_build $(GCC_BOOTSTRAP_BLD)/install.done
