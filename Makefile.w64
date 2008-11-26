@@ -1,4 +1,4 @@
-ROOT_DIR	= /Users/david/src/cross
+ROOT_DIR	= $(PWD)
 ARCHIVE_DIR	= $(ROOT_DIR)/archives
 BUILD_DIR	= $(ROOT_DIR)/build
 INSTALL_DIR	= $(ROOT_DIR)/install
