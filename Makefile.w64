@@ -20,8 +20,8 @@ W32API_BLD	= $(BUILD_DIR)/w32api-3.11
 W64API_SRC	= $(ARCHIVE_DIR)/trunk/mingw-w64-crt
 W64API_BLD	= $(BUILD_DIR)/mingw-w64-crt
 
-GMP_SRC	= $(ARCHIVE_DIR)/gmp-4.2.2
-GMP_BLD	= $(BUILD_DIR)/gmp-4.2.2
+GMP_SRC	= $(ARCHIVE_DIR)/gmp-4.2.4
+GMP_BLD	= $(BUILD_DIR)/gmp-4.2.4
 
 MPFR_SRC	= $(ARCHIVE_DIR)/mpfr-2.3.1
 MPFR_BLD	= $(BUILD_DIR)/mpfr-2.3.1
