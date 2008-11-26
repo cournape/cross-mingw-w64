@@ -1,0 +1,157 @@
+--- gmp-4.2.2-32bit/configure	Mon Sep 10 01:10:47 2007
++++ gmp-4.2.2-64bit/configure	Sat Dec  8 21:32:38 2007
+@@ -3598,6 +3598,15 @@
+ 	esac
+ 	;;
+     esac
++
++    # On Win64 long is only 32 bit and the ABI is different
++    # Therefore, we should use long long and no linux assembler.
++    case $host_os in
++      mingw*)
++        limb_64=longlong
++        path_64=""
++        ;;
++    esac
+     ;;
+ 
+ 
+--- gmp-4.2.2-32bit/configure.in	Sun Sep  9 18:39:14 2007
++++ gmp-4.2.2-64bit/configure.in	Sat Dec  8 21:34:14 2007
+@@ -1468,6 +1468,15 @@
+ 	esac
+ 	;;
+     esac
++
++    # On Win64 long is only 32 bit and the ABI is different
++    # Therefore, we should use long long and no linux assembler.
++    case $host_os in
++      mingw*)
++        limb_64=longlong
++        path_64=""
++        ;;
++    esac
+     ;;
+ 
+ 
+--- gmp-4.2.2-32bit/tests/memory.c	Thu Aug 30 20:31:41 2007
++++ gmp-4.2.2-64bit/tests/memory.c	Sat Dec  8 20:35:19 2007
+@@ -88,12 +88,12 @@
+   tests_memory_list = h;
+ 
+   rptr = __gmp_default_allocate (size + 2 * sizeof (mp_limb_t));
+-  ptr = (void *) ((long) rptr + sizeof (mp_limb_t));
++  ptr = (void *) ((intptr_t) rptr + sizeof (mp_limb_t));
+ 
+-  *((mp_limb_t *) ((long) ptr - sizeof (mp_limb_t)))
++  *((mp_limb_t *) ((intptr_t) ptr - sizeof (mp_limb_t)))
+     = PATTERN1 - ((mp_limb_t) ptr);
+   PATTERN2_var = PATTERN2 - ((mp_limb_t) ptr);
+-  memcpy ((void *) ((long) ptr + size), &PATTERN2_var, sizeof (mp_limb_t));
++  memcpy ((void *) ((intptr_t) ptr + size), &PATTERN2_var, sizeof (mp_limb_t));
+ 
+   h->size = size;
+   h->ptr = ptr;
+@@ -130,28 +130,28 @@
+       abort ();
+     }
+ 
+-  if (*((mp_limb_t *) ((long) ptr - sizeof (mp_limb_t)))
++  if (*((mp_limb_t *) ((intptr_t) ptr - sizeof (mp_limb_t)))
+       != PATTERN1 - ((mp_limb_t) ptr))
+     {
+       fprintf (stderr, "in realloc: redzone clobbered before block\n");
+       abort ();
+     }
+   PATTERN2_var = PATTERN2 - ((mp_limb_t) ptr);
+-  if (memcmp ((void *) ((long) ptr + h->size), &PATTERN2_var, sizeof (mp_limb_t)))
++  if (memcmp ((void *) ((intptr_t) ptr + h->size), &PATTERN2_var, sizeof (mp_limb_t)))
+     {
+       fprintf (stderr, "in realloc: redzone clobbered after block\n");
+       abort ();
+     }
+ 
+-  rptr = __gmp_default_reallocate ((void *) ((long) ptr - sizeof (mp_limb_t)),
++  rptr = __gmp_default_reallocate ((void *) ((intptr_t) ptr - sizeof (mp_limb_t)),
+ 				 old_size + 2 * sizeof (mp_limb_t),
+ 				 new_size + 2 * sizeof (mp_limb_t));
+-  ptr = (void *) ((long) rptr + sizeof (mp_limb_t));
++  ptr = (void *) ((intptr_t) rptr + sizeof (mp_limb_t));
+ 
+-  *((mp_limb_t *) ((long) ptr - sizeof (mp_limb_t)))
++  *((mp_limb_t *) ((intptr_t) ptr - sizeof (mp_limb_t)))
+     = PATTERN1 - ((mp_limb_t) ptr);
+   PATTERN2_var = PATTERN2 - ((mp_limb_t) ptr);
+-  memcpy ((void *) ((long) ptr + new_size), &PATTERN2_var, sizeof (mp_limb_t));
++  memcpy ((void *) ((intptr_t) ptr + new_size), &PATTERN2_var, sizeof (mp_limb_t));
+ 
+   h->size = new_size;
+   h->ptr = ptr;
+@@ -180,20 +180,20 @@
+ 
+   *hp = h->next;  /* unlink */
+ 
+-  if (*((mp_limb_t *) ((long) ptr - sizeof (mp_limb_t)))
++  if (*((mp_limb_t *) ((intptr_t) ptr - sizeof (mp_limb_t)))
+       != PATTERN1 - ((mp_limb_t) ptr))
+     {
+       fprintf (stderr, "in free: redzone clobbered before block\n");
+       abort ();
+     }
+   PATTERN2_var = PATTERN2 - ((mp_limb_t) ptr);
+-  if (memcmp ((void *) ((long) ptr + h->size), &PATTERN2_var, sizeof (mp_limb_t)))
++  if (memcmp ((void *) ((intptr_t) ptr + h->size), &PATTERN2_var, sizeof (mp_limb_t)))
+     {
+       fprintf (stderr, "in free: redzone clobbered after block\n");
+       abort ();
+     }
+ 
+-  __gmp_default_free ((void *) ((long) ptr - sizeof(mp_limb_t)),
++  __gmp_default_free ((void *) ((intptr_t) ptr - sizeof(mp_limb_t)),
+ 		      h->size + 2 * sizeof (mp_limb_t));
+   __gmp_default_free (h, sizeof (*h));
+ }
+--- gmp-4.2.2-32bit/tests/amd64check.c	Thu Sep  6 16:28:21 2007
++++ gmp-4.2.2-64bit/tests/amd64check.c	Sat Dec  8 20:38:20 2007
+@@ -25,18 +25,18 @@
+ 
+ /* Vector if constants and register values.  We use one vector to allow access
+    via a base pointer, very beneficial for the PIC-enabled amd64call.asm.  */
+-long calling_conventions_values[23] =
++mp_limb_t calling_conventions_values[23] =
+ {
+-  0x1234567887654321L,		/* want_rbx */
+-  0x89ABCDEFFEDCBA98L,		/* want_rbp */
+-  0xDEADBEEFBADECAFEL,		/* want_r12 */
+-  0xFFEEDDCCBBAA9988L,		/* want_r13 */
+-  0x0011223344556677L,		/* want_r14 */
+-  0x1234432156788765L,		/* want_r15 */
++  0x1234567887654321LL,		/* want_rbx */
++  0x89ABCDEFFEDCBA98LL,		/* want_rbp */
++  0xDEADBEEFBADECAFELL,		/* want_r12 */
++  0xFFEEDDCCBBAA9988LL,		/* want_r13 */
++  0x0011223344556677LL,		/* want_r14 */
++  0x1234432156788765LL,		/* want_r15 */
+ 
+-  0xFEEDABBACAAFBEED,		/* JUNK_RAX */
+-  0xAB78DE89FF5125BB,		/* JUNK_R10 */
+-  0x1238901890189031		/* JUNK_R11 */
++  0xFEEDABBACAAFBEEDLL,		/* JUNK_RAX */
++  0xAB78DE89FF5125BBLL,		/* JUNK_R10 */
++  0x1238901890189031LL		/* JUNK_R11 */
+ 
+   /* rest of array used for dynamic values.  */
+ };
+--- gmp-4.2.2-32bit/tests/misc.c	Thu Aug 30 20:31:41 2007
++++ gmp-4.2.2-64bit/tests/misc.c	Sat Dec  8 20:58:53 2007
+@@ -132,8 +132,8 @@
+ void *
+ align_pointer (void *p, size_t align)
+ {
+-  unsigned long  d;
+-  d = ((unsigned long) p) & (align-1);
++  intptr_t d;
++  d = ((intptr_t) p) & (align-1);
+   d = (d != 0 ? align-d : 0);
+   return (void *) (((char *) p) + d);
+ }
