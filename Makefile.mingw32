@@ -1,0 +1,201 @@
+ROOT_DIR	= $(PWD)
+ARCHIVE_DIR	= $(ROOT_DIR)/../../cross64.bak/archives
+BUILD_DIR	= $(ROOT_DIR)/build
+INSTALL_DIR	= $(ROOT_DIR)/install
+
+TARGET		= i586-mingw32msvc
+
+BINUTILS_SRC	= $(ARCHIVE_DIR)/binutils-2.18.50
+BINUTILS_BLD	= $(BUILD_DIR)/binutils-2.18.50
+
+MINGW32_SRC	= $(ARCHIVE_DIR)/mingw-runtime-3.14
+MINGW32_BLD	= $(BUILD_DIR)/mingw-runtime-3.14
+
+W32API_SRC	= $(ARCHIVE_DIR)/w32api-3.11
+W32API_BLD	= $(BUILD_DIR)/w32api-3.11
+
+GMP_SRC	= $(ARCHIVE_DIR)/gmp-4.2.4
+GMP_BLD	= $(BUILD_DIR)/gmp-4.2.4
+
+MPFR_SRC	= $(ARCHIVE_DIR)/mpfr-2.3.1
+MPFR_BLD	= $(BUILD_DIR)/mpfr-2.3.1
+
+GCC_BOOTSTRAP_SRC	= $(ARCHIVE_DIR)/gcc-4.3.0
+GCC_BOOTSTRAP_BLD	= $(BUILD_DIR)/gcc-4.3.0-bootstrap
+
+MAKE		= make -j4
+
+GCC_BOOTSTRAP_CONFIGURE_OPTS	= --with-gmp=$(HOME)/local --with-mpfr=$(HOME)/local \
+			--with-sysroot=$(INSTALL_DIR) --with-gnu-ld --with-gnu-as
+GCC_CONFIGURE_OPTS	= --with-gmp=$(HOME)/local --with-mpfr=$(HOME)/local \
+			--with-sysroot=$(INSTALL_DIR) --with-gnu-ld --with-gnu-as
+
+GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.3.0
+GCC_BLD	= $(BUILD_DIR)/gcc-4.3.0
+
+GCC_LANGUAGES = c,fortran,c++
+
+export PATH:=$(INSTALL_DIR)/bin:$(PATH)
+
+mpfr_install: mpfr_build $(MPFR_BLD)/install.done
+
+$(MPFR_BLD)/install.done:
+	(cd $(MPFR_BLD) && make install)
+	touch $@
+
+mpfr_build: mpfr_configure $(MPFR_BLD)/build.done
+
+$(MPFR_BLD)/build.done:
+	(cd $(MPFR_BLD) && $(MAKE))
+	touch $@
+
+mpfr_configure: gmp_install $(MPFR_BLD)/configure.done
+
+$(MPFR_BLD)/configure.done:
+	mkdir -p $(MPFR_BLD)
+	(cd $(MPFR_BLD) && $(MPFR_SRC)/configure \
+	--prefix=$(INSTALL_DIR)/$(TARGET) \
+	--host=$(TARGET) --with-gmp=$(INSTALL_DIR)/$(TARGET))
+	touch $@
+
+gmp_install: gmp_build $(GMP_BLD)/install.done
+
+$(GMP_BLD)/install.done:
+	(cd $(GMP_BLD) && make install)
+	touch $@
+
+gmp_build: gmp_configure $(GMP_BLD)/build.done
+
+$(GMP_BLD)/build.done:
+	(cd $(GMP_BLD) && $(MAKE))
+	touch $@
+
+gmp_configure: w64api_install $(GMP_BLD)/configure.done
+
+$(GMP_BLD)/configure.done:
+	mkdir -p $(GMP_BLD)
+	(cd $(GMP_BLD) && $(GMP_SRC)/configure \
+	--prefix=$(INSTALL_DIR)/$(TARGET) \
+	--host=$(TARGET))
+	touch $@
+
+gcc_install: gcc_build $(GCC_BLD)/install.done
+
+$(GCC_BLD)/install.done:
+	(cd $(GCC_BLD) && make install)
+	touch $@
+
+gcc_build: gcc_configure $(GCC_BLD)/build.done
+
+$(GCC_BLD)/build.done:
+	(cd $(GCC_BLD) && $(MAKE))
+	touch $@
+
+gcc_configure: mingw32_install $(GCC_BLD)/configure.done
+
+$(GCC_BLD)/configure.done:
+	mkdir -p $(GCC_BLD)
+	(cd $(GCC_BLD) && $(GCC_SRC)/configure \
+	--prefix=$(INSTALL_DIR) --target=$(TARGET) \
+	--enable-languages=$(GCC_LANGUAGES) \
+	$(GCC_CONFIGURE_OPTS))
+	touch $@
+
+mingw32_install: mingw32_build $(MINGW32_BLD)/install.done
+
+$(MINGW32_BLD)/install.done:
+	(cd $(MINGW32_BLD) && make install)
+	touch $@
+
+mingw32_build: mingw32_configure $(MINGW32_BLD)/build.done
+
+$(MINGW32_BLD)/build.done:
+	(cd $(MINGW32_BLD) && $(MAKE))
+	touch $@
+
+mingw32_configure: w32api_install $(MINGW32_BLD)/configure.done
+
+$(MINGW32_BLD)/configure.done:
+	mkdir -p $(MINGW32_BLD)
+	(cd $(MINGW32_BLD) && $(MINGW32_SRC)/configure \
+	--prefix=$(INSTALL_DIR)/$(TARGET) \
+	--host=$(TARGET))
+	touch $@
+
+w32api_install: w32api_build $(W32API_BLD)/install.done
+
+$(W32API_BLD)/install.done:
+	(cd $(W32API_BLD) && make install)
+	touch $@
+
+w32api_build: w32api_configure $(W32API_BLD)/build.done
+
+$(W32API_BLD)/build.done:
+	(cd $(W32API_BLD) && $(MAKE))
+	touch $@
+
+w32api_configure: gcc_bootstrap_install $(W32API_BLD)/configure.done
+
+$(W32API_BLD)/configure.done:
+	mkdir -p $(W32API_BLD)
+	(cd $(W32API_BLD) && $(W32API_SRC)/configure \
+	--prefix=$(INSTALL_DIR) \
+	--host=$(TARGET))
+	touch $@
+
+gcc_bootstrap_install: gcc_bootstrap_build $(GCC_BOOTSTRAP_BLD)/install.done
+
+$(GCC_BOOTSTRAP_BLD)/install.done: 
+	(cd $(GCC_BOOTSTRAP_BLD) && make install)
+	touch $@
+
+gcc_bootstrap_build: gcc_bootstrap_configure $(GCC_BOOTSTRAP_BLD)/build.done
+
+$(GCC_BOOTSTRAP_BLD)/build.done: 
+	(cd $(GCC_BOOTSTRAP_BLD) && $(MAKE))
+	touch $@
+
+gcc_bootstrap_configure: sysheader_install $(GCC_BOOTSTRAP_BLD)/configure.done
+
+$(GCC_BOOTSTRAP_BLD)/configure.done: 
+	mkdir -p $(GCC_BOOTSTRAP_BLD)
+	(cd $(GCC_BOOTSTRAP_BLD) && $(GCC_BOOTSTRAP_SRC)/configure \
+	--prefix=$(INSTALL_DIR) --target=$(TARGET) --enable-languages=c \
+	$(GCC_BOOTSTRAP_CONFIGURE_OPTS))
+	touch $@
+
+sysheader_install: binutils $(BUILD_DIR)/sys.done
+
+$(BUILD_DIR)/sys.done: 
+	mkdir -p $(INSTALL_DIR)/$(TARGET)/include
+	cp -r $(MINGW32_SRC)/include/* $(INSTALL_DIR)/$(TARGET)/include
+	cp -r $(W32API_SRC)/include/* $(INSTALL_DIR)/$(TARGET)/include
+	ln -s $(INSTALL_DIR)/$(TARGET) $(INSTALL_DIR)/mingw
+	touch $@
+
+binutils: binutils_install
+
+binutils_install: binutils_build $(BINUTILS_BLD)/install.done
+
+$(BINUTILS_BLD)/install.done: 
+	(cd $(BINUTILS_BLD) && make install)
+	touch $@
+
+binutils_build: binutils_configure $(BINUTILS_BLD)/build.done
+
+$(BINUTILS_BLD)/build.done:
+	(cd $(BINUTILS_BLD) && $(MAKE))
+	touch $@
+
+binutils_configure: $(BINUTILS_BLD)/configure.done
+
+$(BINUTILS_BLD)/configure.done:
+	mkdir -p $(BINUTILS_BLD)
+	(cd $(BINUTILS_BLD) && $(BINUTILS_SRC)/configure \
+	--prefix=$(INSTALL_DIR) --target=$(TARGET) \
+	--with-sysroot=$(INSTALL_DIR)/$(TARGET))
+	touch $@
+
+clean:
+	rm -rf $(BUILD_DIR)
+	rm -rf $(INSTALL_DIR)
