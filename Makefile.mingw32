@@ -14,8 +14,8 @@ MINGW32_BLD	= $(BUILD_DIR)/mingw-runtime-3.14
 W32API_SRC	= $(ARCHIVE_DIR)/w32api-3.11
 W32API_BLD	= $(BUILD_DIR)/w32api-3.11
 
-GMP_SRC	= $(ARCHIVE_DIR)/gmp-4.2.4
-GMP_BLD	= $(BUILD_DIR)/gmp-4.2.4
+GMP_SRC	= $(ARCHIVE_DIR)/gmp-4.2.2
+GMP_BLD	= $(BUILD_DIR)/gmp-4.2.2
 
 MPFR_SRC	= $(ARCHIVE_DIR)/mpfr-2.3.1
 MPFR_BLD	= $(BUILD_DIR)/mpfr-2.3.1
@@ -33,7 +33,7 @@ GCC_CONFIGURE_OPTS	= --with-gmp=$(HOME)/local --with-mpfr=$(HOME)/local \
 GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.3.0
 GCC_BLD	= $(BUILD_DIR)/gcc-4.3.0
 
-GCC_LANGUAGES = c,fortran,c++
+GCC_LANGUAGES = c#,fortran,c++
 
 export PATH:=$(INSTALL_DIR)/bin:$(PATH)
 
@@ -70,7 +70,7 @@ $(GMP_BLD)/build.done:
 	(cd $(GMP_BLD) && $(MAKE))
 	touch $@
 
-gmp_configure: w64api_install $(GMP_BLD)/configure.done
+gmp_configure: gcc_install $(GMP_BLD)/configure.done
 
 $(GMP_BLD)/configure.done:
 	mkdir -p $(GMP_BLD)
