@@ -8,87 +8,27 @@ TOOL_DIR        = $(PWD)/install
 
 TARGET		= x86_64-pc-mingw32
 HOST		= x86_64-pc-mingw32
-BUILD		= local
 
-BINUTILS_SRC	= $(ARCHIVE_DIR)/binutils-2.18.50
-BINUTILS_BLD	= $(BUILD_DIR)/binutils-2.18.50
-
-MINGW32_SRC	= $(ARCHIVE_DIR)/mingw-runtime-3.14
-MINGW32_BLD	= $(BUILD_DIR)/mingw-runtime-3.14
+BINUTILS_SRC	= $(ARCHIVE_DIR)/binutils-2.19
+BINUTILS_BLD	= $(BUILD_DIR)/binutils-2.19
 
 MINGW64_SRC	= $(ARCHIVE_DIR)/trunk
 MINGW64_BLD	= $(BUILD_DIR)/mingw-w64
 
-W32API_SRC	= $(ARCHIVE_DIR)/w32api-3.11
-W32API_BLD	= $(BUILD_DIR)/w32api-3.11
-
 W64API_SRC	= $(ARCHIVE_DIR)/trunk/mingw-w64-crt
 W64API_BLD	= $(BUILD_DIR)/mingw-w64-crt
 
-GMP_SRC	= $(ARCHIVE_DIR)/gmp-4.2.4
-GMP_BLD	= $(BUILD_DIR)/gmp-4.2.4
-
-MPFR_SRC	= $(ARCHIVE_DIR)/mpfr-2.3.1
-MPFR_BLD	= $(BUILD_DIR)/mpfr-2.3.1
-
-GCC_BOOTSTRAP_SRC	= $(ARCHIVE_DIR)/gcc-4.3.0
-GCC_BOOTSTRAP_BLD	= $(BUILD_DIR)/gcc-4.3.0-bootstrap
-
 MAKE		= make -j4
 
-GCC_BOOTSTRAP_CONFIGURE_OPTS	= --with-gmp=$(TOOL_DIR) --with-mpfr=$(TOOL_DIR) \
-			--with-sysroot=$(TOOL_DIR) --with-gnu-ld --with-gnu-as
 GCC_CONFIGURE_OPTS	= --with-gmp=$(TOOL_DIR) --with-mpfr=$(TOOL_DIR) \
 			--with-sysroot=$(TOOL_DIR) --with-gnu-ld --with-gnu-as
 
-GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.3.0
-GCC_BLD	= $(BUILD_DIR)/gcc-4.3.0
+GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.3.2
+GCC_BLD	= $(BUILD_DIR)/gcc-4.3.2
 
-GCC_LANGUAGES = c#,fortran,c++
+GCC_LANGUAGES = c,c++#,fortran
 
 export PATH:=$(TOOL_DIR)/bin:$(PATH)
-
-mpfr_install: mpfr_build $(MPFR_BLD)/install.done
-
-$(MPFR_BLD)/install.done:
-	(cd $(MPFR_BLD) && make install)
-	touch $@
-
-mpfr_build: mpfr_configure $(MPFR_BLD)/build.done
-
-$(MPFR_BLD)/build.done:
-	(cd $(MPFR_BLD) && $(MAKE))
-	touch $@
-
-mpfr_configure: gmp_install $(MPFR_BLD)/configure.done
-
-$(MPFR_BLD)/configure.done:
-	mkdir -p $(MPFR_BLD)
-	(cd $(MPFR_BLD) && $(MPFR_SRC)/configure \
-	--prefix=$(INSTALL_DIR)/$(TARGET) \
-	--host=$(TARGET) --with-gmp=$(INSTALL_DIR)/$(TARGET))
-	touch $@
-
-gmp_install: gmp_build $(GMP_BLD)/install.done
-
-$(GMP_BLD)/install.done:
-	(cd $(GMP_BLD) && make install)
-	touch $@
-
-gmp_build: gmp_configure $(GMP_BLD)/build.done
-
-$(GMP_BLD)/build.done:
-	(cd $(GMP_BLD) && $(MAKE))
-	touch $@
-
-gmp_configure: w64api_install $(GMP_BLD)/configure.done
-
-$(GMP_BLD)/configure.done:
-	mkdir -p $(GMP_BLD)
-	(cd $(GMP_BLD) && $(GMP_SRC)/configure \
-	--prefix=$(INSTALL_DIR)/$(TARGET) \
-	--host=$(TARGET))
-	touch $@
 
 gcc_install: gcc_build $(GCC_BLD)/install.done
 
@@ -102,7 +42,7 @@ $(GCC_BLD)/build.done:
 	(cd $(GCC_BLD) && $(MAKE))
 	touch $@
 
-gcc_configure: w64api_build $(GCC_BLD)/configure.done
+gcc_configure: w64api_install $(GCC_BLD)/configure.done
 
 $(GCC_BLD)/configure.done:
 	mkdir -p $(GCC_BLD)
@@ -133,25 +73,25 @@ $(W64API_BLD)/configure.done:
 	--host=$(HOST) --target=$(TARGET))
 	touch $@
 
-gcc_bootstrap_install: gcc_bootstrap_build $(GCC_BOOTSTRAP_BLD)/install.done
+gcc_bootstrap_install: gcc_bootstrap_build $(GCC_BLD)/install.bootstrap.done
 
-$(GCC_BOOTSTRAP_BLD)/install.done: 
-	(cd $(GCC_BOOTSTRAP_BLD) && make install)
+$(GCC_BLD)/install.bootstrap.done: 
+	(cd $(GCC_BLD) && make install-gcc)
 	touch $@
 
-gcc_bootstrap_build: gcc_bootstrap_configure $(GCC_BOOTSTRAP_BLD)/build.done
+gcc_bootstrap_build: gcc_bootstrap_configure $(GCC_BLD)/build.bootstrap.done
 
-$(GCC_BOOTSTRAP_BLD)/build.done: 
-	(cd $(GCC_BOOTSTRAP_BLD) && $(MAKE))
+$(GCC_BLD)/build.bootstrap.done: 
+	(cd $(GCC_BLD) && $(MAKE) all-gcc)
 	touch $@
 
-gcc_bootstrap_configure: sysheader_install $(GCC_BOOTSTRAP_BLD)/configure.done
+gcc_bootstrap_configure: sysheader_install $(GCC_BLD)/configure.done
 
-$(GCC_BOOTSTRAP_BLD)/configure.done: 
-	mkdir -p $(GCC_BOOTSTRAP_BLD)
-	(cd $(GCC_BOOTSTRAP_BLD) && $(GCC_BOOTSTRAP_SRC)/configure \
-	--prefix=$(INSTALL_DIR) --target=$(TARGET) --enable-languages=c \
-	--host=$(HOST) --build=$(BUILD)$(GCC_BOOTSTRAP_CONFIGURE_OPTS))
+$(GCC_BLD)/configure.done: 
+	mkdir -p $(GCC_BLD)
+	(cd $(GCC_BLD) && $(GCC_SRC)/configure \
+	--prefix=$(INSTALL_DIR) --target=$(TARGET) --enable-languages=$(GCC_LANGUAGES) \
+	--host=$(HOST) --build=$(BUILD) $(GCC_CONFIGURE_OPTS))
 	touch $@
 
 sysheader_install: binutils $(BUILD_DIR)/sys.done
