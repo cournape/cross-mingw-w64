@@ -71,7 +71,7 @@ $(GMP_BLD)/build.done:
 	(cd $(GMP_BLD) && $(MAKE))
 	touch $@
 
-gmp_configure: w64api_install $(GMP_BLD)/configure.done
+gmp_configure: gcc_install $(GMP_BLD)/configure.done
 
 $(GMP_BLD)/configure.done:
 	mkdir -p $(GMP_BLD)
