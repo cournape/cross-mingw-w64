@@ -5,8 +5,8 @@ INSTALL_DIR	= $(ROOT_DIR)/install
 
 TARGET		= x86_64-pc-mingw32
 
-BINUTILS_SRC	= $(ARCHIVE_DIR)/binutils-2.18.50
-BINUTILS_BLD	= $(BUILD_DIR)/binutils-2.18.50
+BINUTILS_SRC	= $(ARCHIVE_DIR)/binutils-2.19
+BINUTILS_BLD	= $(BUILD_DIR)/binutils-2.19
 
 MINGW32_SRC	= $(ARCHIVE_DIR)/mingw-runtime-3.14
 MINGW32_BLD	= $(BUILD_DIR)/mingw-runtime-3.14
@@ -26,20 +26,15 @@ GMP_BLD	= $(BUILD_DIR)/gmp-4.2.4
 MPFR_SRC	= $(ARCHIVE_DIR)/mpfr-2.3.1
 MPFR_BLD	= $(BUILD_DIR)/mpfr-2.3.1
 
-GCC_BOOTSTRAP_SRC	= $(ARCHIVE_DIR)/gcc-4.3.0
-GCC_BOOTSTRAP_BLD	= $(BUILD_DIR)/gcc-4.3.0-bootstrap
+MAKE		= make -j8
 
-MAKE		= make -j4
-
-GCC_BOOTSTRAP_CONFIGURE_OPTS	= --with-gmp=$(HOME)/local --with-mpfr=$(HOME)/local \
-			--with-sysroot=$(INSTALL_DIR) --with-gnu-ld --with-gnu-as
-GCC_CONFIGURE_OPTS	= --with-gmp=$(HOME)/local --with-mpfr=$(HOME)/local \
+GCC_CONFIGURE_OPTS	= --with-gmp=/usr/data/david/local --with-mpfr=/usr/data/david/local \
 			--with-sysroot=$(INSTALL_DIR) --with-gnu-ld --with-gnu-as
 
-GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.3.0
-GCC_BLD	= $(BUILD_DIR)/gcc-4.3.0
+GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.3.2
+GCC_BLD	= $(BUILD_DIR)/gcc-4.3.2
 
-GCC_LANGUAGES = c,fortran#,c++
+GCC_LANGUAGES = c,c++#,fortran
 
 export PATH:=$(INSTALL_DIR)/bin:$(PATH)
 
@@ -91,20 +86,10 @@ $(GCC_BLD)/install.done:
 	(cd $(GCC_BLD) && make install)
 	touch $@
 
-gcc_build: gcc_configure $(GCC_BLD)/build.done
+gcc_build: w64api_install $(GCC_BLD)/build.done
 
 $(GCC_BLD)/build.done:
 	(cd $(GCC_BLD) && $(MAKE))
-	touch $@
-
-gcc_configure: w64api_build $(GCC_BLD)/configure.done
-
-$(GCC_BLD)/configure.done:
-	mkdir -p $(GCC_BLD)
-	(cd $(GCC_BLD) && $(GCC_SRC)/configure \
-	--prefix=$(INSTALL_DIR) --target=$(TARGET) \
-	--enable-languages=$(GCC_LANGUAGES) \
-	$(GCC_CONFIGURE_OPTS))
 	touch $@
 
 w64api_install: w64api_build $(W64API_BLD)/install.done
@@ -128,25 +113,25 @@ $(W64API_BLD)/configure.done:
 	--host=$(TARGET))
 	touch $@
 
-gcc_bootstrap_install: gcc_bootstrap_build $(GCC_BOOTSTRAP_BLD)/install.done
+gcc_bootstrap_install: gcc_bootstrap_build $(GCC_BLD)/install.bootstrap.done
 
-$(GCC_BOOTSTRAP_BLD)/install.done: 
-	(cd $(GCC_BOOTSTRAP_BLD) && make install)
+$(GCC_BLD)/install.bootstrap.done: 
+	(cd $(GCC_BLD) && make install-gcc)
 	touch $@
 
-gcc_bootstrap_build: gcc_bootstrap_configure $(GCC_BOOTSTRAP_BLD)/build.done
+gcc_bootstrap_build: gcc_bootstrap_configure $(GCC_BLD)/build.bootstrap.done
 
-$(GCC_BOOTSTRAP_BLD)/build.done: 
-	(cd $(GCC_BOOTSTRAP_BLD) && $(MAKE))
+$(GCC_BLD)/build.bootstrap.done: 
+	(cd $(GCC_BLD) && $(MAKE) all-gcc)
 	touch $@
 
-gcc_bootstrap_configure: sysheader_install $(GCC_BOOTSTRAP_BLD)/configure.done
+gcc_bootstrap_configure: sysheader_install $(GCC_BLD)/configure.done
 
-$(GCC_BOOTSTRAP_BLD)/configure.done: 
-	mkdir -p $(GCC_BOOTSTRAP_BLD)
-	(cd $(GCC_BOOTSTRAP_BLD) && $(GCC_BOOTSTRAP_SRC)/configure \
-	--prefix=$(INSTALL_DIR) --target=$(TARGET) --enable-languages=c \
-	$(GCC_BOOTSTRAP_CONFIGURE_OPTS))
+$(GCC_BLD)/configure.done: 
+	mkdir -p $(GCC_BLD)
+	(cd $(GCC_BLD) && $(GCC_SRC)/configure \
+	--prefix=$(INSTALL_DIR) --target=$(TARGET) --enable-languages=$(GCC_LANGUAGES) \
+	$(GCC_CONFIGURE_OPTS))
 	touch $@
 
 sysheader_install: binutils $(BUILD_DIR)/sys.done
