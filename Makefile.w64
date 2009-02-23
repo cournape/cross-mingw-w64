@@ -20,23 +20,48 @@ W32API_BLD	= $(BUILD_DIR)/w32api-3.11
 W64API_SRC	= $(ARCHIVE_DIR)/trunk/mingw-w64-crt
 W64API_BLD	= $(BUILD_DIR)/mingw-w64-crt
 
+GDB_SRC	= $(ARCHIVE_DIR)/gdb-6.8
+GDB_BLD	= $(BUILD_DIR)/gdb-6.8
+
 GMP_SRC	= $(ARCHIVE_DIR)/gmp-4.2.4
 GMP_BLD	= $(BUILD_DIR)/gmp-4.2.4
 
-MPFR_SRC	= $(ARCHIVE_DIR)/mpfr-2.3.1
-MPFR_BLD	= $(BUILD_DIR)/mpfr-2.3.1
+MPFR_SRC	= $(ARCHIVE_DIR)/mpfr-2.3.2
+MPFR_BLD	= $(BUILD_DIR)/mpfr-2.3.2
 
-MAKE		= make -j8
+MAKE		= make -j2
 
-GCC_CONFIGURE_OPTS	= --with-gmp=/usr/data/david/local --with-mpfr=/usr/data/david/local \
+LOCAL_PREFIX	= /Users/david/local
+GCC_CONFIGURE_OPTS	= --with-gmp=$(LOCAL_PREFIX) --with-mpfr=$(LOCAL_PREFIX) \
 			--with-sysroot=$(INSTALL_DIR) --with-gnu-ld --with-gnu-as
 
-GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.3.2
-GCC_BLD	= $(BUILD_DIR)/gcc-4.3.2
+GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.3.3
+GCC_BLD	= $(BUILD_DIR)/gcc-4.3.3
 
-GCC_LANGUAGES = c,c++#,fortran
+GCC_LANGUAGES = c,fortran,c++
 
 export PATH:=$(INSTALL_DIR)/bin:$(PATH)
+
+gdb_install: gdb_build $(GDB_BLD)/install.done
+
+$(GDB_BLD)/install.done:
+	(cd $(GDB_BLD) && make install)
+	touch $@
+
+gdb_build: gdb_configure $(GDB_BLD)/build.done
+
+$(GDB_BLD)/build.done:
+	(cd $(GDB_BLD) && $(MAKE))
+	touch $@
+
+gdb_configure: gmp_install $(GDB_BLD)/configure.done
+
+$(GDB_BLD)/configure.done:
+	mkdir -p $(GDB_BLD)
+	(cd $(GDB_BLD) && $(GDB_SRC)/configure \
+	--prefix=$(INSTALL_DIR)/$(TARGET) \
+	--target=$(TARGET) 
+	touch $@
 
 mpfr_install: mpfr_build $(MPFR_BLD)/install.done
 
