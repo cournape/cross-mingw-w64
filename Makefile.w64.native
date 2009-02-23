@@ -18,15 +18,15 @@ MINGW64_BLD	= $(BUILD_DIR)/mingw-w64
 W64API_SRC	= $(ARCHIVE_DIR)/trunk/mingw-w64-crt
 W64API_BLD	= $(BUILD_DIR)/mingw-w64-crt
 
-MAKE		= make -j4
+MAKE		= make -j2
 
 GCC_CONFIGURE_OPTS	= --with-gmp=$(TOOL_DIR) --with-mpfr=$(TOOL_DIR) \
 			--with-sysroot=$(TOOL_DIR) --with-gnu-ld --with-gnu-as
 
-GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.3.2
-GCC_BLD	= $(BUILD_DIR)/gcc-4.3.2
+GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.3.3
+GCC_BLD	= $(BUILD_DIR)/gcc-4.3.3
 
-GCC_LANGUAGES = c,c++#,fortran
+GCC_LANGUAGES = c,fortran,c++
 
 export PATH:=$(TOOL_DIR)/bin:$(PATH)
 
