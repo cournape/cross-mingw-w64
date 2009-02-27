@@ -54,13 +54,12 @@ $(GDB_BLD)/build.done:
 	(cd $(GDB_BLD) && $(MAKE))
 	touch $@
 
-gdb_configure: gmp_install $(GDB_BLD)/configure.done
+gdb_configure: gcc_install $(GDB_BLD)/configure.done
 
 $(GDB_BLD)/configure.done:
 	mkdir -p $(GDB_BLD)
-	(cd $(GDB_BLD) && $(GDB_SRC)/configure \
-	--prefix=$(INSTALL_DIR)/$(TARGET) \
-	--target=$(TARGET) 
+	(cd $(GDB_BLD) && $(GDB_SRC)/configure --prefix=$(INSTALL_DIR)/$(TARGET) \
+	--target=$(TARGET) --disable-werror)
 	touch $@
 
 mpfr_install: mpfr_build $(MPFR_BLD)/install.done
