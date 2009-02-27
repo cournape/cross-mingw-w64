@@ -18,6 +18,9 @@ MINGW64_BLD	= $(BUILD_DIR)/mingw-w64
 W64API_SRC	= $(ARCHIVE_DIR)/trunk/mingw-w64-crt
 W64API_BLD	= $(BUILD_DIR)/mingw-w64-crt
 
+GDB_SRC	= $(ARCHIVE_DIR)/gdb/src
+GDB_BLD	= $(BUILD_DIR)/gdb
+
 MAKE		= make -j2
 
 GCC_CONFIGURE_OPTS	= --with-gmp=$(TOOL_DIR) --with-mpfr=$(TOOL_DIR) \
@@ -29,6 +32,26 @@ GCC_BLD	= $(BUILD_DIR)/gcc-4.3.3
 GCC_LANGUAGES = c,fortran,c++
 
 export PATH:=$(TOOL_DIR)/bin:$(PATH)
+
+gdb_install: gdb_build $(GDB_BLD)/install.done
+
+$(GDB_BLD)/install.done:
+	(cd $(GDB_BLD) && make install)
+	touch $@
+
+gdb_build: gdb_configure $(GDB_BLD)/build.done
+
+$(GDB_BLD)/build.done:
+	(cd $(GDB_BLD) && $(MAKE))
+	touch $@
+
+gdb_configure: sysheader_install $(GDB_BLD)/configure.done
+
+$(GDB_BLD)/configure.done:
+	mkdir -p $(GDB_BLD)
+	(cd $(GDB_BLD) && $(GDB_SRC)/configure --prefix=$(INSTALL_DIR) \
+	--target=$(TARGET) --host=$(HOST) --disable-werror)
+	touch $@
 
 gcc_install: gcc_build $(GCC_BLD)/install.done
 
