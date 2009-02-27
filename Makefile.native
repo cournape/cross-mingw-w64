@@ -1,4 +1,4 @@
-ROOT_DIR	= /Users/david/src/cross
+ROOT_DIR	= $(PWD)
 ARCHIVE_DIR	= $(ROOT_DIR)/archives
 BUILD_DIR	= $(ROOT_DIR)/native/build
 INSTALL_DIR	= $(ROOT_DIR)/native/install
@@ -6,33 +6,28 @@ INSTALL_DIR	= $(ROOT_DIR)/native/install
 TARGET		= i586-mingw32msvc
 HOST		= i586-mingw32msvc
 
-BINUTILS_SRC	= $(ARCHIVE_DIR)/binutils-2.18.50
-BINUTILS_BLD	= $(BUILD_DIR)/binutils-2.18.50
+BINUTILS_SRC	= $(ARCHIVE_DIR)/binutils-2.19
+BINUTILS_BLD	= $(BUILD_DIR)/binutils-2.19
 
-MINGW32_SRC	= $(ARCHIVE_DIR)/mingw-runtime-3.14
-MINGW32_BLD	= $(BUILD_DIR)/mingw-runtime-3.14
+MINGW32_SRC	= $(ARCHIVE_DIR)/mingwrt-3.15.2-mingw32
+MINGW32_BLD	= $(BUILD_DIR)/mingwrt-3.15.2-mingw32
 
-W32API_SRC	= $(ARCHIVE_DIR)/w32api-3.11
-W32API_BLD	= $(BUILD_DIR)/w32api-3.11
+W32API_SRC	= $(ARCHIVE_DIR)/w32api-3.13-mingw32
+W32API_BLD	= $(BUILD_DIR)/w32api-3.13-mingw32
 
-GCC_BOOTSTRAP_SRC	= $(ARCHIVE_DIR)/gcc-4.3.0
-GCC_BOOTSTRAP_BLD	= $(BUILD_DIR)/gcc-4.3.0-bootstrap
+GMP_SRC	= $(ARCHIVE_DIR)/gmp-4.2.4
+GMP_BLD	= $(BUILD_DIR)/gmp-4.2.4
 
-GMP_SRC	= $(ARCHIVE_DIR)/gmp-4.2.2
-GMP_BLD	= $(BUILD_DIR)/gmp-4.2.2
-
-MPFR_SRC	= $(ARCHIVE_DIR)/mpfr-2.3.1
-MPFR_BLD	= $(BUILD_DIR)/mpfr-2.3.1
+MPFR_SRC	= $(ARCHIVE_DIR)/mpfr-2.3.2
+MPFR_BLD	= $(BUILD_DIR)/mpfr-2.3.2
 
 MAKE		= make -j2
 
-GCC_BOOTSTRAP_CONFIGURE_OPTS	= --with-gmp=$(INSTALL_DIR) --with-mpfr=$(INSTALL_DIR) \
-			--with-sysroot=$(INSTALL_DIR)
 GCC_CONFIGURE_OPTS	= --with-gmp=$(INSTALL_DIR) --with-mpfr=$(INSTALL_DIR) \
 			--with-sysroot=$(INSTALL_DIR)
 
-GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.3.0
-GCC_BLD	= $(BUILD_DIR)/gcc-4.3.0
+GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.3.3
+GCC_BLD	= $(BUILD_DIR)/gcc-4.3.3
 
 GCC_LANGUAGES = c,c++,fortran
 
@@ -99,20 +94,10 @@ $(GCC_BLD)/install.done:
 	(cd $(GCC_BLD) && make install)
 	touch $@
 
-gcc_build: gcc_configure $(GCC_BLD)/build.done
+gcc_build: w32api_install $(GCC_BLD)/build.done
 
 $(GCC_BLD)/build.done:
 	(cd $(GCC_BLD) && $(MAKE))
-	touch $@
-
-gcc_configure: mingw32_install $(GCC_BLD)/configure.done
-
-$(GCC_BLD)/configure.done:
-	mkdir -p $(GCC_BLD)
-	(cd $(GCC_BLD) && $(GCC_SRC)/configure \
-	--prefix=$(INSTALL_DIR) --target=$(TARGET) \
-	--enable-languages=$(GCC_LANGUAGES) \
-	--host=$(HOST) $(GCC_CONFIGURE_OPTS))
 	touch $@
 
 mingw32_install: mingw32_build $(MINGW32_BLD)/install.done
@@ -127,7 +112,7 @@ $(MINGW32_BLD)/build.done:
 	(cd $(MINGW32_BLD) && $(MAKE))
 	touch $@
 
-mingw32_configure: w32api_install $(MINGW32_BLD)/configure.done
+mingw32_configure: gcc_install $(MINGW32_BLD)/configure.done
 
 $(MINGW32_BLD)/configure.done:
 	mkdir -p $(MINGW32_BLD)
@@ -157,25 +142,25 @@ $(W32API_BLD)/configure.done:
 	--host=$(TARGET))
 	touch $@
 
-gcc_bootstrap_install: gcc_bootstrap_build $(GCC_BOOTSTRAP_BLD)/install.done
+gcc_bootstrap_install: gcc_bootstrap_build $(GCC_BLD)/install.bootstrap.done
 
-$(GCC_BOOTSTRAP_BLD)/install.done: 
-	(cd $(GCC_BOOTSTRAP_BLD) && make install)
+$(GCC_BLD)/install.bootstrap.done: 
+	(cd $(GCC_BLD) && make install-gcc)
 	touch $@
 
-gcc_bootstrap_build: gcc_bootstrap_configure $(GCC_BOOTSTRAP_BLD)/build.done
+gcc_bootstrap_build: gcc_bootstrap_configure $(GCC_BLD)/build.bootstrap.done
 
-$(GCC_BOOTSTRAP_BLD)/build.done: 
-	(cd $(GCC_BOOTSTRAP_BLD) && $(MAKE))
+$(GCC_BLD)/build.bootstrap.done: 
+	(cd $(GCC_BLD) && $(MAKE) all-gcc)
 	touch $@
 
-gcc_bootstrap_configure: sysheader_install $(GCC_BOOTSTRAP_BLD)/configure.done
+gcc_bootstrap_configure: sysheader_install $(GCC_BLD)/configure.bootstrap.done
 
-$(GCC_BOOTSTRAP_BLD)/configure.done: 
-	mkdir -p $(GCC_BOOTSTRAP_BLD)
-	(cd $(GCC_BOOTSTRAP_BLD) && $(GCC_BOOTSTRAP_SRC)/configure \
-	--prefix=$(INSTALL_DIR) --target=$(TARGET) --enable-languages=c \
-	--host=$(HOST) $(GCC_BOOTSTRAP_CONFIGURE_OPTS))
+$(GCC_BLD)/configure.bootstrap.done: 
+	mkdir -p $(GCC_BLD)
+	(cd $(GCC_BLD) && $(GCC_SRC)/configure \
+	--prefix=$(INSTALL_DIR) --target=$(TARGET) --enable-languages=$(GCC_LANGUAGES) \
+	--host=$(HOST) $(GCC_CONFIGURE_OPTS))
 	touch $@
 
 sysheader_install: binutils $(BUILD_DIR)/sys.done
