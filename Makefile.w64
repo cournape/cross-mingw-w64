@@ -5,8 +5,8 @@ INSTALL_DIR	= $(ROOT_DIR)/install
 
 TARGET		= x86_64-pc-mingw32
 
-BINUTILS_SRC	= $(ARCHIVE_DIR)/binutils-2.19
-BINUTILS_BLD	= $(BUILD_DIR)/binutils-2.19
+BINUTILS_SRC	= $(ARCHIVE_DIR)/binutils-2.19.51
+BINUTILS_BLD	= $(BUILD_DIR)/binutils-2.19.51
 
 MINGW32_SRC	= $(ARCHIVE_DIR)/mingw-runtime-3.14
 MINGW32_BLD	= $(BUILD_DIR)/mingw-runtime-3.14
@@ -23,20 +23,20 @@ W64API_BLD	= $(BUILD_DIR)/mingw-w64-crt
 GDB_SRC	= $(ARCHIVE_DIR)/gdb-6.8
 GDB_BLD	= $(BUILD_DIR)/gdb-6.8
 
-GMP_SRC	= $(ARCHIVE_DIR)/gmp-4.2.4
-GMP_BLD	= $(BUILD_DIR)/gmp-4.2.4
+GMP_SRC	= $(ARCHIVE_DIR)/gmp-4.2.2
+GMP_BLD	= $(BUILD_DIR)/gmp-4.2.2
 
-MPFR_SRC	= $(ARCHIVE_DIR)/mpfr-2.3.2
-MPFR_BLD	= $(BUILD_DIR)/mpfr-2.3.2
+MPFR_SRC	= $(ARCHIVE_DIR)/mpfr-2.4.1
+MPFR_BLD	= $(BUILD_DIR)/mpfr-2.4.1
 
-MAKE		= make -j2
+MAKE		= make -j8
 
-LOCAL_PREFIX	= /Users/david/local
+LOCAL_PREFIX	= /usr/data/david/local
 GCC_CONFIGURE_OPTS	= --with-gmp=$(LOCAL_PREFIX) --with-mpfr=$(LOCAL_PREFIX) \
 			--with-sysroot=$(INSTALL_DIR) --with-gnu-ld --with-gnu-as
 
-GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.3.3
-GCC_BLD	= $(BUILD_DIR)/gcc-4.3.3
+GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.4-20090320
+GCC_BLD	= $(BUILD_DIR)/gcc-4.4-20090320
 
 GCC_LANGUAGES = c,fortran,c++
 
