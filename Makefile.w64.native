@@ -33,6 +33,11 @@ GCC_LANGUAGES = c,fortran,c++
 
 export PATH:=$(TOOL_DIR)/bin:$(PATH)
 
+zip: strip native.zip
+
+native.zip:
+	(cd native/ && zip -r native.zip install && mv native.zip ..)
+
 strip: $(BUILD_DIR)/strip.done
 
 $(BUILD_DIR)/strip.done:
