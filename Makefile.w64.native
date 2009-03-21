@@ -33,6 +33,12 @@ GCC_LANGUAGES = c,fortran,c++
 
 export PATH:=$(TOOL_DIR)/bin:$(PATH)
 
+strip: $(BUILD_DIR)/strip.done
+
+$(BUILD_DIR)/strip.done:
+	find $(INSTALL_DIR) -name '*.exe' -exec ./install/bin/x86_64-pc-mingw32-strip '{}' \;
+	touch $@
+
 gdb_install: gdb_build $(GDB_BLD)/install.done
 
 $(GDB_BLD)/install.done:
