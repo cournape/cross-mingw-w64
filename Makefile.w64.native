@@ -24,7 +24,8 @@ GDB_BLD	= $(BUILD_DIR)/gdb
 MAKE		= make -j8
 
 GCC_CONFIGURE_OPTS	= --with-gmp=$(TOOL_DIR) --with-mpfr=$(TOOL_DIR) \
-			--with-sysroot=$(TOOL_DIR) --with-gnu-ld --with-gnu-as
+			--with-sysroot=$(TOOL_DIR) --with-gnu-ld --with-gnu-as \
+			--disable-shared --disable-win32-registry
 
 GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.4-20090320
 GCC_BLD	= $(BUILD_DIR)/gcc-4.4-20090320
