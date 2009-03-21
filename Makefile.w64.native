@@ -69,7 +69,7 @@ gcc_configure: w64api_install $(GCC_BLD)/configure.done
 
 $(GCC_BLD)/configure.done:
 	mkdir -p $(GCC_BLD)
-	(cd $(GCC_BLD) && $(GCC_SRC)/configure \
+	(cd $(GCC_BLD) && CFLAGS="-O0" $(GCC_SRC)/configure \
 	--prefix=$(INSTALL_DIR) --target=$(TARGET) \
 	--enable-languages=$(GCC_LANGUAGES) \
 	--host=$(HOST) $(GCC_CONFIGURE_OPTS))
