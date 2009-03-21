@@ -139,19 +139,19 @@ $(W64API_BLD)/configure.done:
 
 gcc_bootstrap_install: gcc_bootstrap_build $(GCC_BLD)/install.bootstrap.done
 
-$(GCC_BLD)/install.bootstrap.done: 
+$(GCC_BLD)/install.bootstrap.done:
 	(cd $(GCC_BLD) && make install-gcc)
 	touch $@
 
 gcc_bootstrap_build: gcc_bootstrap_configure $(GCC_BLD)/build.bootstrap.done
 
-$(GCC_BLD)/build.bootstrap.done: 
+$(GCC_BLD)/build.bootstrap.done:
 	(cd $(GCC_BLD) && $(MAKE) all-gcc)
 	touch $@
 
 gcc_bootstrap_configure: sysheader_install $(GCC_BLD)/configure.done
 
-$(GCC_BLD)/configure.done: 
+$(GCC_BLD)/configure.done:
 	mkdir -p $(GCC_BLD)
 	(cd $(GCC_BLD) && $(GCC_SRC)/configure \
 	--prefix=$(INSTALL_DIR) --target=$(TARGET) --enable-languages=$(GCC_LANGUAGES) \
@@ -160,7 +160,7 @@ $(GCC_BLD)/configure.done:
 
 sysheader_install: binutils $(BUILD_DIR)/sys.done
 
-$(BUILD_DIR)/sys.done: 
+$(BUILD_DIR)/sys.done:
 	mkdir -p $(INSTALL_DIR)/$(TARGET)/include
 	cp -r $(MINGW64_SRC)/mingw-w64-headers/include/* $(INSTALL_DIR)/$(TARGET)/include
 	ln -s $(INSTALL_DIR)/$(TARGET) $(INSTALL_DIR)/mingw
@@ -170,7 +170,7 @@ binutils: binutils_install
 
 binutils_install: binutils_build $(BINUTILS_BLD)/install.done
 
-$(BINUTILS_BLD)/install.done: 
+$(BINUTILS_BLD)/install.done:
 	(cd $(BINUTILS_BLD) && make install)
 	touch $@
 
