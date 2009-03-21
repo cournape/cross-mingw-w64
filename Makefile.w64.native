@@ -37,7 +37,7 @@ export PATH:=$(TOOL_DIR)/bin:$(PATH)
 zip: strip native.zip
 
 native.zip:
-	(cd native/ && zip -r native.zip install && mv native.zip ..)
+	zip -r $@ install
 
 strip: $(BUILD_DIR)/strip.done
 
