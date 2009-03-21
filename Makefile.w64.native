@@ -59,7 +59,7 @@ $(GCC_BLD)/install.done:
 	(cd $(GCC_BLD) && make install)
 	touch $@
 
-gcc_build: gcc_configure $(GCC_BLD)/build.done
+gcc_build: w64api_install $(GCC_BLD)/build.done
 
 $(GCC_BLD)/build.done:
 	(cd $(GCC_BLD) && $(MAKE))
@@ -108,9 +108,9 @@ $(GCC_BLD)/build.bootstrap.done:
 	(cd $(GCC_BLD) && $(MAKE) all-gcc)
 	touch $@
 
-gcc_bootstrap_configure: sysheader_install $(GCC_BLD)/configure.done
+gcc_bootstrap_configure: sysheader_install $(GCC_BLD)/configure.bootstrap.done
 
-$(GCC_BLD)/configure.done:
+$(GCC_BLD)/configure.bootstrap.done:
 	mkdir -p $(GCC_BLD)
 	(cd $(GCC_BLD) && $(GCC_SRC)/configure \
 	--prefix=$(INSTALL_DIR) --target=$(TARGET) --enable-languages=$(GCC_LANGUAGES) \
