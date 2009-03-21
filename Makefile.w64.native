@@ -76,16 +76,6 @@ $(GCC_BLD)/build.done:
 	(cd $(GCC_BLD) && $(MAKE))
 	touch $@
 
-gcc_configure: w64api_install $(GCC_BLD)/configure.done
-
-$(GCC_BLD)/configure.done:
-	mkdir -p $(GCC_BLD)
-	(cd $(GCC_BLD) && CFLAGS="-O0" $(GCC_SRC)/configure \
-	--prefix=$(INSTALL_DIR) --target=$(TARGET) \
-	--enable-languages=$(GCC_LANGUAGES) \
-	--host=$(HOST) $(GCC_CONFIGURE_OPTS))
-	touch $@
-
 w64api_install: w64api_build $(W64API_BLD)/install.done
 
 $(W64API_BLD)/install.done:
@@ -123,7 +113,7 @@ gcc_bootstrap_configure: sysheader_install $(GCC_BLD)/configure.bootstrap.done
 
 $(GCC_BLD)/configure.bootstrap.done:
 	mkdir -p $(GCC_BLD)
-	(cd $(GCC_BLD) && $(GCC_SRC)/configure \
+	(cd $(GCC_BLD) && CFLAGS="-O0" $(GCC_SRC)/configure \
 	--prefix=$(INSTALL_DIR) --target=$(TARGET) --enable-languages=$(GCC_LANGUAGES) \
 	--host=$(HOST) --build=$(BUILD) $(GCC_CONFIGURE_OPTS))
 	touch $@
