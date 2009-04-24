@@ -5,40 +5,57 @@ INSTALL_DIR	= $(ROOT_DIR)/install
 
 TARGET		= x86_64-pc-mingw32
 
-BINUTILS_SRC	= $(ARCHIVE_DIR)/binutils-2.19.51
-BINUTILS_BLD	= $(BUILD_DIR)/binutils-2.19.51
+# BINUTILS_SRC	= $(ARCHIVE_DIR)/binutils-2.19
+# BINUTILS_BLD	= $(BUILD_DIR)/binutils-2.19
+# 
+# MINGW32_SRC	= $(ARCHIVE_DIR)/mingw-runtime-3.14
+# MINGW32_BLD	= $(BUILD_DIR)/mingw-runtime-3.14
+# 
+# MINGW64_SRC	= $(ARCHIVE_DIR)/trunk
+# MINGW64_BLD	= $(BUILD_DIR)/mingw-w64
+# 
+# W32API_SRC	= $(ARCHIVE_DIR)/w32api-3.11
+# W32API_BLD	= $(BUILD_DIR)/w32api-3.11
+# 
+# W64API_SRC	= $(ARCHIVE_DIR)/trunk/mingw-w64-crt
+# W64API_BLD	= $(BUILD_DIR)/mingw-w64-crt
+# 
+# GDB_SRC	= $(ARCHIVE_DIR)/gdb-6.8
+# GDB_BLD	= $(BUILD_DIR)/gdb-6.8
+# 
+# GMP_SRC	= $(ARCHIVE_DIR)/gmp-4.2.2
+# GMP_BLD	= $(BUILD_DIR)/gmp-4.2.2
+# 
+# MPFR_SRC	= $(ARCHIVE_DIR)/mpfr-2.4.1
+# MPFR_BLD	= $(BUILD_DIR)/mpfr-2.4.1
+# 
+# MAKE		= make -j8
+# 
+# LOCAL_PREFIX	= /usr/data/david/local
+# GCC_CONFIGURE_OPTS	= --with-gmp=$(LOCAL_PREFIX) --with-mpfr=$(LOCAL_PREFIX) \
+# 			--with-sysroot=$(INSTALL_DIR) --with-gnu-ld --with-gnu-as
+# 
+# GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.4-20090320
+# GCC_BLD	= $(BUILD_DIR)/gcc-4.4-20090320
+# 
+# GCC_LANGUAGES = c,fortran,c++
 
-MINGW32_SRC	= $(ARCHIVE_DIR)/mingw-runtime-3.14
-MINGW32_BLD	= $(BUILD_DIR)/mingw-runtime-3.14
+BINUTILS_SRC	= $(ARCHIVE_DIR)/binutils/src
+BINUTILS_BLD	= $(BUILD_DIR)/binutils-2.19
 
-MINGW64_SRC	= $(ARCHIVE_DIR)/trunk
+MINGW64_SRC	= $(ARCHIVE_DIR)/mingw
 MINGW64_BLD	= $(BUILD_DIR)/mingw-w64
 
-W32API_SRC	= $(ARCHIVE_DIR)/w32api-3.11
-W32API_BLD	= $(BUILD_DIR)/w32api-3.11
-
-W64API_SRC	= $(ARCHIVE_DIR)/trunk/mingw-w64-crt
+W64API_SRC	= $(ARCHIVE_DIR)/mingw/mingw-w64-crt
 W64API_BLD	= $(BUILD_DIR)/mingw-w64-crt
 
-GDB_SRC	= $(ARCHIVE_DIR)/gdb-6.8
-GDB_BLD	= $(BUILD_DIR)/gdb-6.8
+MAKE		= make -j3
+GCC_CONFIGURE_OPTS	= --with-sysroot=$(INSTALL_DIR) --with-gnu-ld --with-gnu-as
 
-GMP_SRC	= $(ARCHIVE_DIR)/gmp-4.2.2
-GMP_BLD	= $(BUILD_DIR)/gmp-4.2.2
+GCC_SRC	= $(ARCHIVE_DIR)/gcc/gcc
+GCC_BLD	= $(BUILD_DIR)/gcc-4.4
 
-MPFR_SRC	= $(ARCHIVE_DIR)/mpfr-2.4.1
-MPFR_BLD	= $(BUILD_DIR)/mpfr-2.4.1
-
-MAKE		= make -j8
-
-LOCAL_PREFIX	= /usr/data/david/local
-GCC_CONFIGURE_OPTS	= --with-gmp=$(LOCAL_PREFIX) --with-mpfr=$(LOCAL_PREFIX) \
-			--with-sysroot=$(INSTALL_DIR) --with-gnu-ld --with-gnu-as
-
-GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.4-20090320
-GCC_BLD	= $(BUILD_DIR)/gcc-4.4-20090320
-
-GCC_LANGUAGES = c,fortran,c++
+GCC_LANGUAGES = c#,fortran,c++
 
 export PATH:=$(INSTALL_DIR)/bin:$(PATH)
 

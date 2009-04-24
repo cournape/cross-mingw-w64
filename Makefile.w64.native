@@ -9,28 +9,45 @@ TOOL_DIR        = $(PWD)/install
 TARGET		= x86_64-pc-mingw32
 HOST		= x86_64-pc-mingw32
 
-BINUTILS_SRC	= $(ARCHIVE_DIR)/binutils-2.19.51
-BINUTILS_BLD	= $(BUILD_DIR)/binutils-2.19.51
+#BINUTILS_SRC	= $(ARCHIVE_DIR)/binutils-2.19.51
+#BINUTILS_BLD	= $(BUILD_DIR)/binutils-2.19.51
+#
+#MINGW64_SRC	= $(ARCHIVE_DIR)/trunk
+#MINGW64_BLD	= $(BUILD_DIR)/mingw-w64
+#
+#W64API_SRC	= $(ARCHIVE_DIR)/trunk/mingw-w64-crt
+#W64API_BLD	= $(BUILD_DIR)/mingw-w64-crt
+#
+#GDB_SRC	= $(ARCHIVE_DIR)/gdb/src
+#GDB_BLD	= $(BUILD_DIR)/gdb
+#
+#MAKE		= make -j8
+#
+#GCC_CONFIGURE_OPTS	= --with-gmp=$(TOOL_DIR) --with-mpfr=$(TOOL_DIR) \
+#			--with-sysroot=$(TOOL_DIR) --with-gnu-ld --with-gnu-as \
+#			--disable-shared --disable-win32-registry
+#
+#GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.4-20090320
+#GCC_BLD	= $(BUILD_DIR)/gcc-4.4-20090320
+#
+#GCC_LANGUAGES = c,fortran,c++
 
-MINGW64_SRC	= $(ARCHIVE_DIR)/trunk
+BINUTILS_SRC	= $(ARCHIVE_DIR)/binutils/src
+BINUTILS_BLD	= $(BUILD_DIR)/binutils-2.19
+
+MINGW64_SRC	= $(ARCHIVE_DIR)/mingw
 MINGW64_BLD	= $(BUILD_DIR)/mingw-w64
 
-W64API_SRC	= $(ARCHIVE_DIR)/trunk/mingw-w64-crt
+W64API_SRC	= $(ARCHIVE_DIR)/mingw/mingw-w64-crt
 W64API_BLD	= $(BUILD_DIR)/mingw-w64-crt
 
-GDB_SRC	= $(ARCHIVE_DIR)/gdb/src
-GDB_BLD	= $(BUILD_DIR)/gdb
+MAKE		= make -j3
+GCC_CONFIGURE_OPTS	= --with-sysroot=$(INSTALL_DIR) --with-gnu-ld --with-gnu-as
 
-MAKE		= make -j8
+GCC_SRC	= $(ARCHIVE_DIR)/gcc/gcc
+GCC_BLD	= $(BUILD_DIR)/gcc-4.4
 
-GCC_CONFIGURE_OPTS	= --with-gmp=$(TOOL_DIR) --with-mpfr=$(TOOL_DIR) \
-			--with-sysroot=$(TOOL_DIR) --with-gnu-ld --with-gnu-as \
-			--disable-shared --disable-win32-registry
-
-GCC_SRC	= $(ARCHIVE_DIR)/gcc-4.4-20090320
-GCC_BLD	= $(BUILD_DIR)/gcc-4.4-20090320
-
-GCC_LANGUAGES = c,fortran,c++
+GCC_LANGUAGES = c#,fortran,c++
 
 export PATH:=$(TOOL_DIR)/bin:$(PATH)
 
